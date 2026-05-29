@@ -8,9 +8,18 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 // import './assets/main.css'
 
+// 全局注册 Element Plus 图标组件
+import *  as ElementPlusIconsVue from '@element-plus/icons-vue'
+
+
+
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
 app.use(ElementPlus)
+// 遍历全部图标组件 全局注册 Element Plus 图标组件
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
 app.mount('#app')

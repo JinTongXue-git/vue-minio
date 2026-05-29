@@ -31,7 +31,7 @@ class Request {
 
     this.instance.interceptors.response.use(
       (response) => {
-        return response
+        return response.data  // 直接返回数据，不需要 API 层再取
       },
       (error) => {
         return Promise.reject(error)
@@ -104,5 +104,5 @@ class Request {
   }
   
 }
-const request = Request.getInstance('http://192.168.100.129:9000')
+const request = Request.getInstance('http://localhost:8080')
 export default request
