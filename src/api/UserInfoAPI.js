@@ -8,7 +8,16 @@ export async function getUserInfos() {
     console.log(err)
     return Promise.reject(err)
   }
-
 }
 
+export function getUserInfo(id) {
+  return request.get(`/api/user/${id}`)
+}
 
+export function getUserImage(id) {
+  return request.get(`/api/user/image/${id}`)
+}
+
+export function getUserContract(id) {
+  return request.get(`/api/user/contract/${id}`)
+}

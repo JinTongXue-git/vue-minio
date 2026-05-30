@@ -1,15 +1,15 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
+import { useRoute } from 'vue-router'
+import { getUserInfo, getUserImage, getUserContract } from '@/api/UserInfoAPI.js'
 
-const form = ref({
-  nick: '',
-  password: '',
-  sex: 0,
-  phone: '',
-  email: '',
-  address: ''
-})
+const route = useRoute()
+const id = route.params.id
+
+const form = ref({})
+const imageUrl = ref('')
+const contractFileList = ref([])
 
 const sexOptions = [
   { label: '未知', value: 0 },
@@ -19,10 +19,37 @@ const sexOptions = [
 
 const uploadImageRef = ref(null)
 const uploadContractRef = ref(null)
-const imageUrl = ref('')
+
+onMounted(async () => {
+  try {
+    const [userRes, imageRes, contractRes] = await Promise.all([
+      getUserInfo(id),
+      getUserImage(id),
+      getUserContract(id)
+    ])
+    
+    if (userRes.code === 200) {
+      form.value = userRes.data
+    }
+    
+    if (imageRes.code === 200 && imageRes.data) {
+      imageUrl.value = imageRes.data.url
+    }
+    
+    if (contractRes.code === 200 && contractRes.data) {
+      contractFileList.value = [{
+        name: contractRes.data.fileName || '合同文件',
+        url: contractRes.data.url
+      }]
+    }
+  } catch (err) {
+    console.log(err)
+  }
+})
 
 const handlePreview = (file) => {
   console.log('预览文件:', file)
+  window.open(file.url, '_blank')
 }
 
 const submitForm = () => {
@@ -56,12 +83,11 @@ const submitForm = () => {
         <el-input v-model="form.address" placeholder="请输入地址" />
       </el-form-item>
       
-      <!-- 图片上传 -->
       <el-form-item label="头像">
         <el-upload
           ref="uploadImageRef"
           class="avatar-uploader"
-          action="http://localhost:8080/api/user/image"
+          :action="`http://localhost:8080/api/user/image/${id}`"
           :show-file-list="true"
           :auto-upload="false"
         >
@@ -70,11 +96,11 @@ const submitForm = () => {
         </el-upload>
       </el-form-item>
       
-      <!-- 文件上传 -->
       <el-form-item label="合同文件">
         <el-upload
           ref="uploadContractRef"
-          action="http://localhost:8080/api/user/contract"
+          :action="`http://localhost:8080/api/user/contract/${id}`"
+          :file-list="contractFileList"
           multiple
           :auto-upload="false"
           :on-preview="handlePreview"

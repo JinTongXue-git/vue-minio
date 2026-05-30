@@ -42,7 +42,7 @@
 
       <el-table-column fixed="right" label="操作" min-width="120">
         <template #default="scope">
-          <router-link :to="`/edit`">
+          <router-link :to="`/edit/${scope.row.id}`">
             <el-button link type="primary" size="small">编辑</el-button>
           </router-link>
           <el-button link type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
